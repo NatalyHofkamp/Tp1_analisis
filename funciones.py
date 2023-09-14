@@ -16,12 +16,13 @@ def diente_de_sierra(A, f, muestras):
     señal = A * (muestras * f - np.floor((1/2) + f * muestras))
     plot(muestras, señal, 'Señal Diente de Sierra', 'Tiempo', 'Amplitud', 'Diente de Sierra')
 
-def serie_diente_de_sierra(A, a0, w, muestras, cant_armonicos, umbral=1e-6):
+def serie_diente_de_sierra(A, a0, T, muestras, cant_armonicos, umbral=1e-6):
     serie = []
     for t in muestras:
         armonicos = 0
         for n in range(1, cant_armonicos + 1):
-            armonico = ((-1) ** (n + 1)) * (A / (np.pi * n)) * np.sin(w * n * t)
+            armonico = (4*A/T**2)*(((T/((2*np.pi/T)*n))*(1-np.cos((2*np.pi/T)*n*t/2)))+\
+                       (np.sin((2*np.pi/T)*n*(t/2))/((2*np.pi/T)*n)**2)) * np.sin((2*np.pi/T)* n * t)
             if abs(armonico) < umbral:
                 armonico = 0  
             armonicos += armonico
@@ -34,12 +35,12 @@ def tren_de_pulsos(A,w, tiempo_total, muestras):
     señal = np.sign(np.sin(w * tiempo))
     plot(tiempo, señal, 'Señal x(t)', 'Tiempo (s)', 'Amplitud', 'Tren de Pulsos')
 
-def serie_tren_de_pulsos(w, muestras, cant_armonicos):
+def serie_tren_de_pulsos(A,T, muestras, cant_armonicos):
     serie = []
     for t in muestras:
         armonicos = 0
         for n in range(1, cant_armonicos + 1):
-            armonicos += ((2 / (np.pi * w) / n) * np.sin(n * w * t))
+            armonicos += ((4*A/(T*n*(2*np.pi/T)))*(1-np.cos(n*(2*np.pi/T)*T/2)) * np.sin(n *(2*np.pi/T) * t))
         serie.append(armonicos)
     plot(muestras, serie, 'Serie del Tren de Pulsos', 'Muestras', 'Serie', 'serie tren de pulsos')
 
@@ -50,12 +51,12 @@ def main():
     T = (2*np.pi)   
     tiempo_total = 6*np.pi 
     w= (2*np.pi)/T 
-    muestras = np.linspace(0,2*np.pi,100)
+    muestras = np.linspace(0,tiempo_total,100)
     muestras_diente = np.linspace(0,20,100)
     diente_de_sierra(A,1/2,muestras_diente)
-    serie_diente_de_sierra(A,A/2,np.pi,muestras_diente,30)
+    serie_diente_de_sierra(A,A/2,2,muestras_diente,30)
     tren_de_pulsos(A,w,tiempo_total,100)
-    serie_tren_de_pulsos(w,muestras,10)
+    serie_tren_de_pulsos(A,T,muestras,50)
    
 if __name__ =='__main__':
     main()
