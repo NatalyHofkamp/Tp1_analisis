@@ -21,10 +21,11 @@ def tren_de_pulsos(A,T,muestras):
 
 def serie_tren_de_pulsos(A,T, muestras, cant_armonicos):
     serie = []
+    w= (2*np.pi/T)
     for t in muestras:
         armonicos = 0
         for n in range(1, cant_armonicos + 1):
-            armonicos += ((4*A/(T*n*(2*np.pi/T)))*(1-np.cos(n*(2*np.pi/T)*T/2)) * np.sin(n *(2*np.pi/T) * t))
+            armonicos += ((4*A/(T*n*w))*(1-np.cos(n*w*T/2)) * np.sin(n *w * t))
         serie.append(armonicos)
     # plot(muestras, serie, 'Serie del Tren de Pulsos', 'Muestras', 'Serie', 'serie tren de pulsos')
     return serie
@@ -51,22 +52,42 @@ def serie_diente_de_sierra(A,T, muestras, cant_armonicos):
     # plot(muestras, serie, 'Serie Diente de Sierra', 'Muestras', 'Serie', 'serie diente de sierra')
     return serie
 
-
-
-
-def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
-    plt.figure(figsize=(14, 8))  # Tamaño de figura ajustado para acomodar el cartel con 4 valores
-    muestras = np.linspace(0, periodo, cant_muestras)
-    signal_ = signal(A, T, muestras)
+def graphs(muestras,signal_,series):
+    plt.figure(figsize=(14, 8))
     plt.plot(muestras, signal_, label='Señal')
-    for cant_armonicos, linestyle in [(10, 'solid'), (30, '-.'), (50, '--')]:
-        serie_ = serie(A, T, muestras, cant_armonicos)
-        plt.plot(muestras, serie_, label=f'{cant_armonicos} armónicos', linestyle=linestyle)
-    plt.title('Señal y Serie')
-    plt.xlabel('Tiempo')
-    plt.ylabel('Amplitud')
+    for serie,cant_armonicos,linestyle in series:
+         plt.plot(muestras, serie, label=f'{cant_armonicos} armónicos', linestyle=linestyle)
+    plt.title('Señal y Serie',fontsize = 20)
+    plt.xlabel('Tiempo',fontsize = 18)
+    plt.ylabel('Amplitud',fontsize = 18)
     plt.legend(fontsize=14)
 
+def fenomeno_gibbs (muestras,signal_,series,T):
+    print(muestras)
+    puntos_de_discontinuidad = [x for x in muestras if x%(T/2)== 0]
+    print(puntos_de_discontinuidad)
+    for serie, cant_armonicos, linestyle in series:
+        error = np.abs(serie - signal_)  # Calcula la diferencia absoluta entre la serie y la señal original
+        # Encuentra los índices de los puntos de discontinuidad en las muestras
+        indices_discontinuidad = [np.abs(muestras - punto).argmin() for punto in puntos_de_discontinuidad]
+        amplitudes_gibbs = [error[idx] for idx in indices_discontinuidad]
+        
+        # Imprime información sobre el fenómeno de Gibbs en los puntos de discontinuidad
+        # for i, punto in enumerate(puntos_de_discontinuidad):
+        #     print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
+        #     print(f'Cantidad de armónicos: {cant_armonicos}')
+        #     print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
+        #     print()
+
+def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
+    muestras = np.linspace(0, periodo, cant_muestras)
+    signal_ = signal(A, T, muestras)
+    series = []
+    for cant_armonicos, linestyle in [(10, 'solid'), (30, '-.'), (50, '--')]:
+        serie_ = serie(A, T, muestras, cant_armonicos)
+        series.append((serie_,cant_armonicos,linestyle))
+    graphs(muestras,signal_,series)
+    fenomeno_gibbs(muestras,signal_,series,T)
 
 
 def main():
