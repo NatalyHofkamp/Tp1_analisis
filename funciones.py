@@ -1,4 +1,3 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,6 +7,7 @@ def calculate_ECM(signal, approx):
     Calcula el Error Cuadrático Medio (ECM) entre la señal original y la aproximación.
     """
     return np.mean((signal - approx)**2)
+
 
 def calculate_ECM_excluding_discontinuities(signal, approx, discontinuity_indices):
     """
@@ -142,7 +142,7 @@ def main():
     # print('tren de pulsos - error esperado : 0.1')
     approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.08)
     # print('diente de sierra - error esperado : 0.1')
-    # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.1)
+    approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.1)
     # print('tren de pulsos - error esperado : 0.01')
     # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.01)
     print('diente de sierra - error esperado : 0.01')
