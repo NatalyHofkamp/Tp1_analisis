@@ -12,6 +12,7 @@ def plot(x, y, title, xlabel, ylabel, legend):
     plt.legend([legend])
     plt.show()
 
+<<<<<<< Updated upstream
 
 def diente_de_sierra(A, f, muestras):
     señal = A * (muestras * f - np.floor((1/2) + f * muestras))
@@ -38,6 +39,14 @@ def tren_de_pulsos(A, w, tiempo_total, muestras):
     señal = np.sign(np.sin(w * tiempo))
     plot(tiempo, señal, 'Señal x(t)', 'Tiempo (s)', 'Amplitud', 'Tren de Pulsos')
     return tiempo, señal
+=======
+def tren_de_pulsos(A,T,muestras):
+    w = (2*np.pi)/T 
+    tiempo = np.linspace(0, T, muestras)
+    signal = np.sign(np.sin(w * muestras))
+    # plot(muestras, signal, 'Señal x(t)', 'Tiempo (s)', 'Amplitud', 'Tren de Pulsos')
+    return tiempo, signal
+>>>>>>> Stashed changes
 
 
 def serie_tren_de_pulsos(A,T, muestras, cant_armonicos):
@@ -58,6 +67,40 @@ def calcular_ecm(señal_original, señal_aproximada):
 def calcular_ecm_con_armónicos(A, T, muestras, cant_armonicos):
     w= (2*np.pi)/T 
     tiempo, señal_original = tren_de_pulsos(A, w, T, muestras)
+    ecm_resultados = []
+
+    for n in cant_armonicos:
+        serie = []
+        for t in tiempo:
+            armonicos = 0
+            for k in range(1, n + 1):
+                armonicos += (4 / (k * np.pi)) * np.sin(2 * np.pi * k * t / T)
+            serie.append(armonicos)
+        ecm = calcular_ecm(señal_original, serie)
+        ecm_resultados.append(ecm)
+        print(f"ECM con {n} armónicos: {ecm}")
+
+    return ecm_resultados
+
+# Parámetros
+A = 1
+T = 2
+muestras = 1000
+cant_armonicos = [10, 30, 50]
+
+# Calcular ECM
+ecm_resultados = calcular_ecm_con_armónicos(A, T, muestras, cant_armonicos)
+
+# Resultados de ECM
+for i, n in enumerate(cant_armonicos):
+    print(f"ECM con {n} armónicos: {ecm_resultados[i]}")
+
+def calcular_ecm(señal_original, señal_aproximada):
+    return np.mean((señal_original - señal_aproximada) ** 2)
+
+
+def calcular_ecm_con_armónicos(A, T, muestras, cant_armonicos):
+    tiempo, señal_original = tren_de_pulsos(A, T, muestras)
     ecm_resultados = []
 
     for n in cant_armonicos:
