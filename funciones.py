@@ -2,6 +2,68 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+<<<<<<< Updated upstream
+=======
+
+def calculate_ECM(signal, approx):
+    """
+    Calcula el Error Cuadrático Medio (ECM) entre la señal original y la aproximación.
+    """
+    return np.mean((signal - approx)**2)
+
+
+def calculate_ECM_excluding_discontinuities(signal, approx, discontinuity_indices):
+    """
+    Calcula el Error Cuadrático Medio (ECM) excluyendo los puntos de discontinuidad.
+    """
+    discontinuity_indices = np.array(discontinuity_indices)
+    valid_indices = np.delete(np.arange(len(signal)), discontinuity_indices)
+    return np.mean((signal[valid_indices] - approx[valid_indices])**2)
+
+
+def approximate_signal(A, T, muestras, signal, serie, target_ECM):
+    """
+    Aproxima una señal utilizando Series de Fourier hasta que el ECM sea menor o igual al valor de target_ECM.
+    Retorna la cantidad de armónicos necesarios para alcanzar el target_ECM y grafica la aproximación conseguida.
+
+    Parameters:
+    - A: Amplitud de la señal.
+    - T: Periodo de la señal.
+    - muestras: Puntos de tiempo donde se evaluará la señal.
+    - signal: Función que genera la señal original.
+    - serie: Función que calcula la serie de Fourier.
+    - target_ECM: Valor de ECM deseado como criterio de paro.
+
+    Returns:
+    - cant_armonicos: Cantidad de armónicos utilizados para alcanzar el target_ECM.
+    """
+    current_ECM = np.inf  # Inicializar el ECM con infinito.
+    cant_armonicos = 0
+    discontinuity_indices = np.where(np.diff(signal) != 0)[0]  # Índices de discontinuidades
+
+    while current_ECM > target_ECM:
+        cant_armonicos += 1
+        approx_signal = np.array(serie(A, T, muestras, cant_armonicos))
+        current_ECM = calculate_ECM_excluding_discontinuities(signal, approx_signal, discontinuity_indices)
+        print(f'Iteración {cant_armonicos}: ECM = {current_ECM}')
+
+    # Graficar la señal original y la aproximación conseguida.
+    plt.figure(figsize=(12, 6))
+    plt.plot(muestras, signal, label='Señal Original', linestyle='-', color='b')
+    plt.plot(muestras, approx_signal, label=f'Aproximación con {cant_armonicos} armónicos', linestyle='--', color='r')
+    plt.title('Aproximación de Señal con Serie de Fourier')
+    plt.xlabel('Tiempo (s)')
+    plt.ylabel('Amplitud')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    return cant_armonicos
+
+
+
+
+>>>>>>> Stashed changes
 def plot(x, y, title, xlabel, ylabel, legend):
     plt.figure()
     plt.stem(x, y, label=legend, linefmt='b-', markerfmt='bo', basefmt=' ')
@@ -64,6 +126,7 @@ def calcular_ecm(señal_original, señal_aproximada):
     return np.mean((señal_original - señal_aproximada) ** 2)
 
 
+<<<<<<< Updated upstream
 def calcular_ecm_con_armónicos(A, T, muestras, cant_armonicos):
     w= (2*np.pi)/T 
     tiempo, señal_original = tren_de_pulsos(A, w, T, muestras)
@@ -147,3 +210,39 @@ for i, n in enumerate(cant_armonicos):
    
 # if __name__ =='__main__':
 #     main()
+=======
+def main():
+    A = 1.0      
+    T = (2*np.pi)   
+    tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
+    diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
+    print('tren de pulsos - error esperado : 0.5')
+    cant_armónicos_tren_0_5 = approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.5)
+    print('diente de sierra - error esperado : 0.5')
+    cant_armónicos_diente_0_5 = approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.5)
+    print('tren de pulsos - error esperado : 0.08')
+    cant_armónicos_tren_0_08 = approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.08)
+    print('diente de sierra - error esperado : 0.08')
+    cant_armónicos_diente_0_08 = approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.08)
+    print('tren de pulsos - error esperado : 0.03')
+    cant_armónicos_tren_0_03 = approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.03)
+    print('diente de sierra - error esperado : 0.03')
+    cant_armónicos_diente_0_03 = approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.03)
+    
+    # Crear gráfico del ECM en función de la cantidad de armónicos
+    cantidades_armónicos = [cant_armónicos_tren_0_5, cant_armónicos_diente_0_5,
+                            cant_armónicos_tren_0_08, cant_armónicos_diente_0_08, cant_armónicos_tren_0_03, cant_armónicos_diente_0_03]
+
+    errores_objetivo = [0.5, 0.5, 0.08, 0.08, 0.03, 0.03]
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(cantidades_armónicos, errores_objetivo, marker='o', linestyle='-', color='b')
+    plt.title('ECM Objetivo vs. Cantidad de Armónicos')
+    plt.xlabel('Cantidad de Armónicos')
+    plt.ylabel('ECM Objetivo')
+    plt.grid(True)
+    plt.show()
+
+if __name__ =='__main__':
+    main()
+>>>>>>> Stashed changes
