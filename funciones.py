@@ -97,6 +97,23 @@ def serie_diente_de_sierra(A,T, muestras, cant_armonicos):
         serie.append(armonicos)
     return serie
 
+def triangular(A, T, muestras):
+    periodo = T / 2
+    y = np.abs((muestras % T) - periodo)
+    return (4 * A * y) / T - A
+
+def serie_triangular(A, T, muestras, cant_armonicos):
+    serie = np.zeros_like(muestras)
+    w0 = 2*np.pi / T
+    a_0 = 0
+    serie += a_0 / 2
+
+    for n in range(1, cant_armonicos*2, 2):
+        a_n = (8 * A) / (n ** 2 * np.pi**2)
+        serie += a_n * np.cos(n * w0 * muestras)
+
+    return serie
+
 def fenomeno_gibbs (signal_,series,T):
     signal_ = np.array(signal_)
     maxima_valor = np.max(signal_)
@@ -118,6 +135,7 @@ def graphs(muestras,signal_,series,title):
     plt.xlabel('Tiempo (s)',fontsize = 18)
     plt.ylabel('Señal x(t)',fontsize = 18)
     plt.legend(fontsize=14)
+    plt.show()
 
 def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
     muestras = np.linspace(0, periodo, cant_muestras)
@@ -126,7 +144,7 @@ def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
     for cant_armonicos, linestyle in [(10, 'solid'), (30, '-.'), (50, '--')]:
         serie_ = serie(A, T, muestras, cant_armonicos)
         series.append((serie_,cant_armonicos,linestyle))
-    # graphs(muestras,signal_,series)
+    graphs(muestras,signal_,series, "series")
     # fenomeno_gibbs(signal_,series,T)
     return (signal_,muestras,series)
 
@@ -135,6 +153,7 @@ def main():
     T = (2*np.pi)   
     tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
     diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
+    señal_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 2*np.pi, 100, triangular, serie_triangular)
     print('tren de pulsos - error esperado : 0.5')
     # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.5)
     # print('diente de sierra - error esperado : 0.5')
