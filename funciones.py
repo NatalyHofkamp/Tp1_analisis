@@ -280,11 +280,33 @@ def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
 
 
 def main():
-    # A = 1.0      
-    # T = (2*np.pi)   
-    # # tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
-    # # diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
-    # señal_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, 100, triangular, serie_triangular)
+    A = 1.0      
+    T = (2*np.pi)
+    cant_muestras = 100
+    target_ECM = [0.5, 0.1, 0.08, 0.01]
+
+    #Tren de pulsos:
+    print("Tren de puslos: ")
+    tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
+    graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
+    for i in range(len(target_ECM)):
+        print("Error esperado: ", target_ECM[i])
+        approximate_signal(A, T, muestras_tren_pulsos, tren_pulsos, serie_tren_de_pulsos, target_ECM[i])
+
+    print("Diente de sierra: ")
+    diente_sierra, muestras_diente, series_diente = create_signal_serie(A, 2, 6, cant_muestras, diente_de_sierra, serie_diente_de_sierra)
+    graphs(muestras_diente, diente_sierra, series_diente, "Diente de Sierra y Series de Fourier")
+    for i in range(len(target_ECM)):
+        print("Error esperado: ", target_ECM[i])
+        approximate_signal(A, T, muestras_diente, diente_sierra, serie_diente_de_sierra, target_ECM[i])
+
+    print("Triangular")
+    sen_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, cant_muestras, triangular, serie_triangular)
+    graphs(muestras_triangular, sen_triangular, series_triangular, 'Triangular y Series de Fourier')
+
+    #tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
+    #diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
+    #señal_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, 100, triangular, serie_triangular)
     # plot(muestras_triangular,señal_triangular, 'selk','sjf','trianualr','wef')
     # print('tren de pulsos - error esperado : 0.5')
     # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.5)
@@ -298,5 +320,6 @@ def main():
     # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.01)
     # print('diente de sierra - error esperado : 0.01')
     # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.01)
+
 if __name__ =='__main__':
     main()
