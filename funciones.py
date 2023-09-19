@@ -229,10 +229,10 @@ def fenomeno_gibbs(signal_, series, T):
     for serie, cant_armonicos, linestyle in series:
         error = np.abs(serie - signal_)
         amplitudes_gibbs = [error[idx] for idx in rising_edges]
-        for i, punto in enumerate(rising_edges):
-            print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
-            print(f'Cantidad de armónicos: {cant_armonicos}')
-            print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
+        # for i, punto in enumerate(rising_edges):
+        #     print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
+        #     print(f'Cantidad de armónicos: {cant_armonicos}')
+        #     print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
 
 def graphs(muestras, signal_, series, title):
     """
@@ -285,8 +285,7 @@ def main():
     cant_muestras = 100
     target_ECM = [0.5, 0.1, 0.08, 0.01]
 
-    #Tren de pulsos:
-    print("Tren de puslos: ")
+    print("Tren de pulsos: ")
     tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
     graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
     for i in range(len(target_ECM)):
@@ -303,23 +302,6 @@ def main():
     print("Triangular")
     sen_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, cant_muestras, triangular, serie_triangular)
     graphs(muestras_triangular, sen_triangular, series_triangular, 'Triangular y Series de Fourier')
-
-    #tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
-    #diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
-    #señal_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, 100, triangular, serie_triangular)
-    # plot(muestras_triangular,señal_triangular, 'selk','sjf','trianualr','wef')
-    # print('tren de pulsos - error esperado : 0.5')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.5)
-    # # print('diente de sierra - error esperado : 0.5')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.5)
-    # # print('tren de pulsos - error esperado : 0.1')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.08)
-    # # print('diente de sierra - error esperado : 0.1')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.1)
-    # # print('tren de pulsos - error esperado : 0.01')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.01)
-    # print('diente de sierra - error esperado : 0.01')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.01)
 
 if __name__ =='__main__':
     main()
