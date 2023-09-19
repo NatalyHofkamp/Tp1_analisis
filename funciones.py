@@ -2,8 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-<<<<<<< Updated upstream
-=======
 
 def calculate_ECM(signal, approx):
     """
@@ -62,8 +60,6 @@ def approximate_signal(A, T, muestras, signal, serie, target_ECM):
 
 
 
-
->>>>>>> Stashed changes
 def plot(x, y, title, xlabel, ylabel, legend):
     plt.figure()
     plt.stem(x, y, label=legend, linefmt='b-', markerfmt='bo', basefmt=' ')
@@ -74,7 +70,7 @@ def plot(x, y, title, xlabel, ylabel, legend):
     plt.legend([legend])
     plt.show()
 
-<<<<<<< Updated upstream
+
 
 def diente_de_sierra(A, f, muestras):
     señal = A * (muestras * f - np.floor((1/2) + f * muestras))
@@ -101,14 +97,14 @@ def tren_de_pulsos(A, w, tiempo_total, muestras):
     señal = np.sign(np.sin(w * tiempo))
     plot(tiempo, señal, 'Señal x(t)', 'Tiempo (s)', 'Amplitud', 'Tren de Pulsos')
     return tiempo, señal
-=======
+
 def tren_de_pulsos(A,T,muestras):
     w = (2*np.pi)/T 
     tiempo = np.linspace(0, T, muestras)
     signal = np.sign(np.sin(w * muestras))
     # plot(muestras, signal, 'Señal x(t)', 'Tiempo (s)', 'Amplitud', 'Tren de Pulsos')
     return tiempo, signal
->>>>>>> Stashed changes
+
 
 
 def serie_tren_de_pulsos(A,T, muestras, cant_armonicos):
@@ -125,8 +121,7 @@ def serie_tren_de_pulsos(A,T, muestras, cant_armonicos):
 def calcular_ecm(señal_original, señal_aproximada):
     return np.mean((señal_original - señal_aproximada) ** 2)
 
-
-<<<<<<< Updated upstream
+ 
 def calcular_ecm_con_armónicos(A, T, muestras, cant_armonicos):
     w= (2*np.pi)/T 
     tiempo, señal_original = tren_de_pulsos(A, w, T, muestras)
@@ -210,7 +205,7 @@ for i, n in enumerate(cant_armonicos):
    
 # if __name__ =='__main__':
 #     main()
-=======
+
 def main():
     A = 1.0      
     T = (2*np.pi)   
@@ -245,4 +240,4 @@ def main():
 
 if __name__ =='__main__':
     main()
->>>>>>> Stashed changes
+
