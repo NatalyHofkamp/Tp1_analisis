@@ -1,18 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calculate_ECM(signal, approx):
+def calculate_ECM(signal, approx, auto_threshold=False):
     """
     Calcula el Error Cuadrático Medio (ECM) entre la señal original y la aproximación.
 
     Parámetros:
     signal (array): La señal original.
     approx (array): La señal aproximada.
+    auto_threshold (bool): Indica si se debe calcular automáticamente el umbral de descuento.
 
     Retorna:
     float: El valor del ECM calculado.
     """
-    return np.mean((signal - approx)**2)
+    N = 0
+    e = 0
+    if auto_threshold:
+        threshold = np.max(np.abs(np.diff(signal))) * 0.1
+    else:
+        threshold = 0.1  # Puedes ajustar este valor manualmente si no deseas el umbral automático
+    
+    for i in range(len(signal) - 1):
+        if np.abs(signal[i] - signal[i + 1]) < threshold:
+            N += 1
+            e += (signal[i] - approx[i])**2
+    
+    if N > 0:
+        e *= 1/N
+    else:
+        e = 0.0
+    
+    return e
 
 def calculate_ECM_excluding_discontinuities(signal, approx, discontinuity_indices):
     """
@@ -30,7 +48,7 @@ def calculate_ECM_excluding_discontinuities(signal, approx, discontinuity_indice
     valid_indices = np.delete(np.arange(len(signal)), discontinuity_indices)
     return np.mean((signal[valid_indices] - approx[valid_indices])**2)
 
-def approximate_signal(A, T, muestras, signal, serie, target_ECM):
+def approximate_signal(A, T, muestras, signal, serie, target_ECM, auto_threshold=False):
     """
     Aproxima una señal utilizando Series de Fourier hasta que el ECM sea menor o igual al valor de target_ECM.
     Retorna la cantidad de armónicos necesarios para alcanzar el target_ECM.
@@ -42,6 +60,7 @@ def approximate_signal(A, T, muestras, signal, serie, target_ECM):
     signal (array): La señal original.
     serie (function): Función que calcula la aproximación de la señal.
     target_ECM (float): Valor de referencia para el ECM.
+    auto_threshold (bool): Indica si se debe calcular automáticamente el umbral de descuento.
 
     Retorna:
     int: La cantidad de armónicos necesarios para alcanzar el target_ECM.
@@ -54,10 +73,12 @@ def approximate_signal(A, T, muestras, signal, serie, target_ECM):
     while current_ECM > target_ECM and cant_armonicos < 500:
         cant_armonicos += 1
         approx_signal = np.array(serie(A, T, muestras, cant_armonicos))
-        current_ECM = calculate_ECM(signal, approx_signal)
+        current_ECM = calculate_ECM(signal, approx_signal, auto_threshold)
         valid_ECM = calculate_ECM_excluding_discontinuities(signal, approx_signal, discontinuity_indices)
         total_ECM_values.append(current_ECM)
         valid_ECM_values.append(valid_ECM)
+
+    print(f'Armónicos: {cant_armonicos}, ECM Total: {current_ECM}, ECM Excluyendo Discontinuidades: {valid_ECM}')
 
     plt.figure(figsize=(12, 6))
     plt.plot(range(1, cant_armonicos + 1), total_ECM_values, label='ECM Total')
