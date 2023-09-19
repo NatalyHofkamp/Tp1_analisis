@@ -306,24 +306,27 @@ def main():
     cant_muestras = 100
     target_ECM = [0.5, 0.1, 0.08, 0.01]
 
-    #Tren de pulsos:
-    print("Tren de puslos: ")
-    tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
-    graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
-    for i in range(len(target_ECM)):
-        print("Error esperado: ", target_ECM[i])
-        approximate_signal(A, T, muestras_tren_pulsos, tren_pulsos, serie_tren_de_pulsos, target_ECM[i])
+    # Tren de pulsos:
+    # print("Tren de puslos: ")
+    # tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
+    # graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
+    # for i in range(len(target_ECM)):
+    #     print("Error esperado: ", target_ECM[i])
+    #     approximate_signal(A, T, muestras_tren_pulsos, tren_pulsos, serie_tren_de_pulsos, target_ECM[i])
 
-    print("Diente de sierra: ")
-    diente_sierra, muestras_diente, series_diente = create_signal_serie(A, 2, 6, cant_muestras, diente_de_sierra, serie_diente_de_sierra)
-    graphs(muestras_diente, diente_sierra, series_diente, "Diente de Sierra y Series de Fourier")
-    for i in range(len(target_ECM)):
-        print("Error esperado: ", target_ECM[i])
-        approximate_signal(A, T, muestras_diente, diente_sierra, serie_diente_de_sierra, target_ECM[i])
+    # print("Diente de sierra: ")
+    # diente_sierra, muestras_diente, series_diente = create_signal_serie(A, 2, 6, cant_muestras, diente_de_sierra, serie_diente_de_sierra)
+    # graphs(muestras_diente, diente_sierra, series_diente, "Diente de Sierra y Series de Fourier")
+    # for i in range(len(target_ECM)):
+    #     print("Error esperado: ", target_ECM[i])
+    #     approximate_signal(A, T, muestras_diente, diente_sierra, serie_diente_de_sierra, target_ECM[i])
 
-    print("Triangular")
-    sen_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, cant_muestras, triangular, serie_triangular)
-    graphs(muestras_triangular, sen_triangular, series_triangular, 'Triangular y Series de Fourier')
+    print("Señal Triangular: ")
+    triangular_signal, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, cant_muestras, triangular, serie_triangular)
+    for target in  target_ECM:
+        print(f"Target ECM: {target}")
+        approximate_signal(A, T, muestras_triangular, triangular_signal, serie_triangular, target)
+    
 
     #tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
     #diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
