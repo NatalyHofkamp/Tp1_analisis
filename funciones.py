@@ -164,6 +164,7 @@ def diente_de_sierra(A, T, muestras):
     signal = A * (muestras * f - np.floor((1 / 2) + f * muestras))
     return signal
 
+
 def serie_diente_de_sierra(A, T, muestras, cant_armonicos):
     """
     Calcula la serie de Fourier para una señal de diente de sierra.
@@ -178,12 +179,14 @@ def serie_diente_de_sierra(A, T, muestras, cant_armonicos):
     array: La serie de Fourier calculada para la señal de diente de sierra.
     """
     serie = []
-    w0 = (2 * np.pi / T)
     for t in muestras:
         armonicos = 0
         for n in range(1, cant_armonicos + 1):
-            a = (2 * A * (-1) ** (n + 1)) / (n * np.pi)
-            armonicos += a * np.sin(n * w0 * t)
+            w = (2 * np.pi / T)
+            a = (4 * A / (T ** 2))
+            alpha = w * n * T / 2
+            b = (T / (2 * w * n))
+            armonicos += (a * ((b * (-np.cos(alpha))) + (np.sin(alpha) / ((w * n) ** 2))) * np.sin(w * n * t))
         serie.append(armonicos)
     return serie
 
@@ -217,15 +220,16 @@ def serie_triangular(A, T, muestras, cant_armonicos):
     cant_armonicos (int): Cantidad de armónicos a calcular en la serie.
 
     Retorna:
-    array: La serie de Fourier calculada para la señal triangular.
+    array: La serie de Fourier calculada para la señal de diente de sierra.
     """
-    serie = []
+    serie = np.zeros_like(muestras)
     w0 = 2 * np.pi / T
-    for t in muestras:
-        armonicos = 0
-        for n in range(1, cant_armonicos + 1):
-            armonicos += ((8 * A / (np.pi**2)) * ((-1)**((n-1)//2)) * np.sin(n * w0 * t) / n**2)
-        serie.append(armonicos)
+    a_0 = 0
+    serie += a_0 / 2
+
+    for n in range(1, cant_armonicos * 2, 2):
+        a_n = (8 * A) / (n ** 2 * np.pi ** 2)
+        serie += a_n * np.cos(n * w0 * muestras)
     return serie
 
 
