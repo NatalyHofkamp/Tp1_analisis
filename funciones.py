@@ -248,10 +248,10 @@ def fenomeno_gibbs(signal_, series, T):
     for serie, cant_armonicos, linestyle in series:
         error = np.abs(serie - signal_)
         amplitudes_gibbs = [error[idx] for idx in rising_edges]
-        for i, punto in enumerate(rising_edges):
-            print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
-            print(f'Cantidad de armónicos: {cant_armonicos}')
-            print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
+        # for i, punto in enumerate(rising_edges):
+        #     print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
+        #     print(f'Cantidad de armónicos: {cant_armonicos}')
+        #     print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
 
 def graphs(muestras, signal_, series, title):
     """
