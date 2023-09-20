@@ -18,8 +18,7 @@ def calculate_ECM(signal, approx, auto_threshold=False):
     if auto_threshold:
         threshold = np.max(np.abs(np.diff(signal))) * 0.1
     else:
-        threshold = 0.1  # Puedes ajustar este valor manualmente si no deseas el umbral automático
-    
+        threshold = 0.1  
     for i in range(len(signal) - 1):
         if np.abs(signal[i] - signal[i + 1]) < threshold:
             N += 1
@@ -297,52 +296,3 @@ def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
     fenomeno_gibbs(signal_, series, T)
     return (signal_, muestras, series)
 
-
-def main():
-    A = 1.0      
-    T = (2*np.pi)
-    cant_muestras = 100
-    target_ECM = [5, 0.1, 0.08, 0.01]
-
-    # Tren de pulsos:
-    # print("Tren de puslos: ")
-    # tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
-    # graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
-    # for i in range(len(target_ECM)):
-    #     print("Error esperado: ", target_ECM[i])
-    #     approximate_signal(A, T, muestras_tren_pulsos, tren_pulsos, serie_tren_de_pulsos, target_ECM[i])
-
-    #Tren de pulsos:
-    print("Tren de puslos: ")
-    tren_pulsos, muestras_tren_pulsos, series_tren_pulsos = create_signal_serie(A, T, 4*np.pi, cant_muestras, tren_de_pulsos, serie_tren_de_pulsos)
-    graphs(muestras_tren_pulsos, tren_pulsos, series_tren_pulsos, "Tren de Pulsos y Series de Fourier")
-    #for i in range(len(target_ECM)):
-        #print("Error esperado: ", target_ECM[i])
-        #approximate_signal(A, T, muestras_tren_pulsos, tren_pulsos, serie_tren_de_pulsos, target_ECM[i])
-
-    print("Señal Triangular:")
-    triangular_signal, muestras_triangular, series_triangular = create_signal_serie(A, T, 4 * np.pi, cant_muestras, triangular, serie_triangular)
-    for target in target_ECM:
-        print(f"Target ECM: {target}")
-        approximate_signal(A, T, muestras_triangular, triangular_signal, serie_triangular, target)
-    
-
-    #tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
-    #diente_sierra, muestras_diente,series_diente = create_signal_serie(A,2,6,100,diente_de_sierra,serie_diente_de_sierra)
-    #señal_triangular, muestras_triangular, series_triangular = create_signal_serie(A, T, 4*np.pi, 100, triangular, serie_triangular)
-    # plot(muestras_triangular,señal_triangular, 'selk','sjf','trianualr','wef')
-    # print('tren de pulsos - error esperado : 0.5')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.5)
-    # # print('diente de sierra - error esperado : 0.5')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.5)
-    # # print('tren de pulsos - error esperado : 0.1')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.08)
-    # # print('diente de sierra - error esperado : 0.1')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.1)
-    # # print('tren de pulsos - error esperado : 0.01')
-    # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.01)
-    # print('diente de sierra - error esperado : 0.01')
-    # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.01)
-
-if __name__ =='__main__':
-    main()
