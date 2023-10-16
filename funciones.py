@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calculate_ECM(signal, serie,disc):
+def calculate_ECM(signal, serie, disc):
     """
     Calcula el Error Cuadrático Medio (ECM) entre la señal original y la aproximación.
 
