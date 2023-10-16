@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calculate_ECM(signal, approx, auto_threshold=False):
+def calculate_ECM(signal, serie,disc):
     """
     Calcula el Error Cuadrático Medio (ECM) entre la señal original y la aproximación.
 
@@ -15,37 +15,16 @@ def calculate_ECM(signal, approx, auto_threshold=False):
     """
     N = 0
     e = 0
-    if auto_threshold:
-        threshold = np.max(np.abs(np.diff(signal))) * 0.1
-    else:
-        threshold = 0.1  # Puedes ajustar este valor manualmente si no deseas el umbral automático
-    
     for i in range(len(signal) - 1):
-        if np.abs(signal[i] - signal[i + 1]) < threshold:
+        if np.abs(signal[i] - signal[i + 1]) < disc:
             N += 1
-            e += (signal[i] - approx[i])**2
-    
-    e *= 1/N
-    
+            e += (signal[i] - serie[i])**2
+
+    e *= (1/N)
     return e
 
-def calculate_ECM_excluding_discontinuities(signal, approx, discontinuity_indices):
-    """
-    Calcula el Error Cuadrático Medio (ECM) excluyendo los puntos de discontinuidad.
 
-    Parámetros:
-    signal (array): La señal original.
-    approx (array): La señal aproximada.
-    discontinuity_indices (array): Índices de los puntos de discontinuidad.
-
-    Retorna:
-    float: El valor del ECM calculado excluyendo los puntos de discontinuidad.
-    """
-    discontinuity_indices = np.array(discontinuity_indices)
-    valid_indices = np.delete(np.arange(len(signal)), discontinuity_indices)
-    return np.mean((signal[valid_indices] - approx[valid_indices])**2)
-
-def approximate_signal(A, T, muestras, signal, serie, target_ECM, auto_threshold=False):
+def approximate_signal(A, T, muestras, signal, serie, target_ECM):
     """
     Aproxima una señal utilizando Series de Fourier hasta que el ECM sea menor o igual al valor de target_ECM.
     Retorna la cantidad de armónicos necesarios para alcanzar el target_ECM.
@@ -64,30 +43,13 @@ def approximate_signal(A, T, muestras, signal, serie, target_ECM, auto_threshold
     """
     current_ECM = np.inf 
     cant_armonicos = 0
-    discontinuity_indices = np.where(np.diff(signal) != 0)[0]  
-    total_ECM_values = []  
-    valid_ECM_values = []  
-    while current_ECM > target_ECM and cant_armonicos < 500:
+    while current_ECM > target_ECM :
         cant_armonicos += 1
         approx_signal = np.array(serie(A, T, muestras, cant_armonicos))
-        current_ECM = calculate_ECM(signal, approx_signal, auto_threshold)
-        valid_ECM = calculate_ECM_excluding_discontinuities(signal, approx_signal, discontinuity_indices)
-        total_ECM_values.append(current_ECM)
-        valid_ECM_values.append(valid_ECM)
+        current_ECM = calculate_ECM(signal, approx_signal)
+        cant_armonicos += 1
+    return current_ECM,cant_armonicos
 
-    print(f'Armónicos: {cant_armonicos}, ECM Total: {current_ECM}, ECM Excluyendo Discontinuidades: {valid_ECM}')
-
-    plt.figure(figsize=(12, 6))
-    plt.plot(range(1, cant_armonicos + 1), total_ECM_values, label='ECM Total')
-    plt.plot(range(1, cant_armonicos + 1), valid_ECM_values, label='ECM Excluyendo Discontinuidades')
-    plt.title('Error Cuadrático Medio (ECM) vs. Cantidad de Armónicos')
-    plt.xlabel('Cantidad de Armónicos')
-    plt.ylabel('ECM')
-    plt.yscale('log')  
-    plt.legend()
-    plt.show()
-
-    return cant_armonicos
 
 def plot(x, y, title, xlabel, ylabel, legend):
     """
@@ -234,28 +196,18 @@ def serie_triangular(A, T, muestras, cant_armonicos):
 
 
 
-def fenomeno_gibbs(signal_, series, T):
+def fenomeno_gibbs(signal, series):
     """
     Calcula el fenómeno de Gibbs en una señal en puntos de discontinuidad.
 
     Parámetros:
     signal_ (array): La señal original.
     series (list): Lista de tuplas con series de Fourier y parámetros.
-    T (float): Período de la señal.
-
-    Imprime:
-    Información sobre el fenómeno de Gibbs en puntos de discontinuidad.
     """
-    signal_ = np.array(signal_)
-    maxima_valor = np.max(signal_)
-    rising_edges = np.where(np.diff(signal_ == maxima_valor))[0]
-    for serie, cant_armonicos, linestyle in series:
-        error = np.abs(serie - signal_)
-        amplitudes_gibbs = [error[idx] for idx in rising_edges]
-        # for i, punto in enumerate(rising_edges):
-        #     print(f'Fenómeno de Gibbs en punto de discontinuidad {i+1}:')
-        #     print(f'Cantidad de armónicos: {cant_armonicos}')
-        #     print(f'Amplitud de Gibbs: {amplitudes_gibbs[i]}')
+    amp = np.max(series)
+    value = signal[np.argmax(series)]
+    return np.abs(amp - value) / value
+ 
 
 def graphs(muestras, signal_, series, title):
     """
@@ -298,7 +250,6 @@ def create_signal_serie(A, T, periodo, cant_muestras, signal, serie):
     for cant_armonicos, linestyle in [(10, 'solid'), (30, '-.'), (50, '--')]:
         serie_ = serie(A, T, muestras, cant_armonicos)
         series.append((serie_, cant_armonicos, linestyle))
-    fenomeno_gibbs(signal_, series, T)
     return (signal_, muestras, series)
 
 
@@ -323,11 +274,11 @@ def main():
     #     print("Error esperado: ", target_ECM[i])
     #     approximate_signal(A, T, muestras_diente, diente_sierra, serie_diente_de_sierra, target_ECM[i])
 
-    print("Señal Triangular:")
-    triangular_signal, muestras_triangular, series_triangular = create_signal_serie(A, T, 4 * np.pi, cant_muestras, triangular, serie_triangular)
-    for target in target_ECM:
-        print(f"Target ECM: {target}")
-        approximate_signal(A, T, muestras_triangular, triangular_signal, serie_triangular, target)
+    # print("Señal Triangular:")
+    # triangular_signal, muestras_triangular, series_triangular = create_signal_serie(A, T, 4 * np.pi, cant_muestras, triangular, serie_triangular)
+    # for target in target_ECM:
+    #     print(f"Target ECM: {target}")
+    #     approximate_signal(A, T, muestras_triangular, triangular_signal, serie_triangular, target)
     
 
     #tren_pulsos, muestras_tren,series_tren= create_signal_serie(A,T,4*np.pi ,100,tren_de_pulsos,serie_tren_de_pulsos)
@@ -346,6 +297,15 @@ def main():
     # # approximate_signal(A,T,muestras_tren,tren_pulsos,serie_tren_de_pulsos,0.01)
     # print('diente de sierra - error esperado : 0.01')
     # # approximate_signal(A,T,muestras_diente,diente_sierra,serie_diente_de_sierra,0.01)
-
+    tren = ('tren de pulsos',tren_pulsos,serie_tren_de_pulsos)
+    diente = ('diente de sierra',diente_de_sierra,serie_diente_de_sierra)
+    triangular = ('señal triangular',señal_triangular,serie_triangular)
+    for name,signal,serie in [tren,diente,triangular]:
+        print(f'{name}:')
+        cant = 10
+        for i in range(3):
+            print(f'Fenómeno de gibbs con {cant} armónicos→ {fenomeno_gibbs(signal,serie[i])}')
 if __name__ =='__main__':
     main()
+
+
